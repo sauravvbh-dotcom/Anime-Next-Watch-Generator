@@ -1,3 +1,5 @@
+// URLs for multiple pages to increase load limit
+
 const loadingElement = document.getElementById('loading');
 const animeContainer = document.getElementById('anime-container');
 const searchInput = document.getElementById('search-input');
@@ -5,12 +7,15 @@ const sortSelect = document.getElementById('sort-select');
 const themeToggle = document.getElementById('theme-toggle');
 const leaderboardList = document.getElementById('leaderboard-list');
 
+// Modal Elements
 const modal = document.getElementById('anime-modal');
 const modalBody = document.getElementById('modal-body');
 const closeModal = document.querySelector('.close-modal');
 
+// Global state for all fetched animes
 let allAnimes = [];
 
+// Lookup map to quickly get detailed data by ID without more API calls
 const animeLookup = new Map();
 
 const apiUrl1 = 'https://api.jikan.moe/v4/anime?page=1';
@@ -18,22 +23,27 @@ const apiUrl2 = 'https://api.jikan.moe/v4/anime?page=2';
 
 async function fetchAnime() {
     try {
+        // Fetch first page
         const response1 = await fetch(apiUrl1);
         if (!response1.ok) throw new Error(`HTTP error! Status: ${response1.status}`);
         const data1 = await response1.json();
         
+        // Slight delay to be safe with Jikan API rate limit (3 req/sec)
         await new Promise(resolve => setTimeout(resolve, 350));
         
+        // Fetch second page to increase the load limit
         const response2 = await fetch(apiUrl2);
         if (!response2.ok) throw new Error(`HTTP error! Status: ${response2.status}`);
         const data2 = await response2.json();
         
+        // Combine data to double the loaded anime
         allAnimes = [...(data1.data || []), ...(data2.data || [])];
         
+        // Add to our lookup Map
         allAnimes.forEach(anime => animeLookup.set(anime.mal_id, anime));
         
         loadingElement.style.display = 'none';
-        renderAnimes();
+        renderAnimes(); // Initial render
         
     } catch (error) {
         console.error("Failed to fetch anime data:", error);
@@ -46,18 +56,21 @@ function renderAnimes() {
     const searchTerm = searchInput.value.toLowerCase();
     const sortOption = sortSelect.value;
     
+    // 1. FILTERING: using Array.prototype.filter
     let filteredAnimes = allAnimes.filter(anime => 
         (anime.title || '').toLowerCase().includes(searchTerm)
     );
     
+    // 2. SORTING: using Array.prototype.sort
     filteredAnimes.sort((a, b) => {
         if (sortOption === 'score-desc') return (b.score || 0) - (a.score || 0);
         if (sortOption === 'score-asc') return (a.score || 0) - (b.score || 0);
         if (sortOption === 'title-asc') return (a.title || '').localeCompare(b.title || '');
         if (sortOption === 'title-desc') return (b.title || '').localeCompare(a.title || '');
-        return 0;
+        return 0; // default order based on API
     });
     
+    // 3. RENDERING: using Array.prototype.map and Array.prototype.join
     const htmlCards = filteredAnimes.map(anime => {
         const title = anime.title || 'Unknown Title';
         const imageUrl = anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url || '';
@@ -80,14 +93,18 @@ function renderAnimes() {
     animeContainer.innerHTML = htmlCards;
 }
 
+// Searching and Filtering Events
 searchInput.addEventListener('input', renderAnimes);
 
+// Sorting Events
 sortSelect.addEventListener('change', renderAnimes);
 
+// Dark Mode Toggle
 themeToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
 });
 
+// Modal Logic
 function openModal(id) {
     const anime = animeLookup.get(Number(id));
     if (!anime) return;
@@ -125,20 +142,23 @@ window.addEventListener('click', (e) => {
     if (e.target === modal) modal.classList.remove('show');
 });
 
+// Button Interaction: Event Delegation for "Favorite" buttons AND Card Clicks
 animeContainer.addEventListener('click', (event) => {
     if (event.target.classList.contains('favorite-btn')) {
         const btn = event.target;
         btn.classList.toggle('active');
         btn.innerText = btn.classList.contains('active') ? '❤️' : '🤍';
-        return;
+        return; // Prevent modal opening
     }
     
+    // Open Modal if clicked on card
     const card = event.target.closest('.anime-card');
     if (card) {
         openModal(card.dataset.id);
     }
 });
 
+// Fetch Leaderboard logic
 async function fetchLeaderboard() {
     try {
         const response = await fetch('https://api.jikan.moe/v4/anime?status=airing&order_by=score&sort=desc&limit=5');
@@ -147,8 +167,10 @@ async function fetchLeaderboard() {
         
         const topAiring = data.data || [];
         
+        // Add to Lookup map
         topAiring.forEach(anime => animeLookup.set(anime.mal_id, anime));
         
+        // Render using higher-order functions
         leaderboardList.innerHTML = topAiring.map((anime, index) => {
             const title = anime.title || 'Unknown';
             const score = anime.score || 'N/A';
@@ -172,6 +194,7 @@ async function fetchLeaderboard() {
     }
 }
 
+// Click on leaderboard items
 leaderboardList.addEventListener('click', (event) => {
     const item = event.target.closest('.leaderboard-item');
     if (item) {
@@ -179,5 +202,6 @@ leaderboardList.addEventListener('click', (event) => {
     }
 });
 
+// Initial Fetch
 fetchAnime();
-setTimeout(fetchLeaderboard, 600);
+setTimeout(fetchLeaderboard, 600); // Slight delay to ensure it doesn't collide with the first two Jikan requests
