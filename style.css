@@ -67,8 +67,6 @@ header h1 {
     letter-spacing: 2px;
     text-transform: uppercase;
 }
-
-/* Controls styling */
 .controls {
     display: flex;
     justify-content: center;
@@ -106,8 +104,6 @@ header h1 {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(255, 117, 140, 0.4);
 }
-
-/* Card layout wrapper */
 .anime-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -115,8 +111,6 @@ header h1 {
     max-width: 1400px;
     margin: 0 auto;
 }
-
-/* Anime Card - Glassmorphism */
 .anime-card {
     position: relative;
     background: var(--card-bg);
@@ -152,8 +146,6 @@ header h1 {
 .anime-card:hover img {
     transform: scale(1.08);
 }
-
-/* Floating overlay badges */
 .floating-badge {
     position: absolute;
     bottom: 15px;
@@ -226,8 +218,6 @@ header h1 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-/* Page Layout */
 .page-layout {
     display: flex;
     gap: 30px;
@@ -239,8 +229,6 @@ header h1 {
 .content-area {
     flex: 1;
 }
-
-/* Sidebar Leaderboard */
 .sidebar {
     width: 350px;
     background: var(--card-bg);
@@ -334,8 +322,6 @@ header h1 {
         margin-bottom: 30px;
     }
 }
-
-/* Loading Animation */
 .loading-wrapper {
     display: flex;
     flex-direction: column;
@@ -373,8 +359,6 @@ header h1 {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
-
-/* Modal Styling */
 .modal {
     display: none;
     position: fixed;
