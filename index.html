@@ -1,21 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anime Showcase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+
+<body class="dark-mode">
     <header>
-        <h1>Anime List</h1>
+        <h1>Anime Showcase</h1>
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Search anime...">
+            <select id="sort-select">
+                <option value="default">Sort by...</option>
+                <option value="score-desc">Score (High to Low)</option>
+                <option value="score-asc">Score (Low to High)</option>
+                <option value="title-asc">Title (A-Z)</option>
+                <option value="title-desc">Title (Z-A)</option>
+            </select>
+            <button id="theme-toggle">Dark Mode</button>
+        </div>
     </header>
-    
-    <main>
-        <div id="loading" class="loading">Loading Anime...</div>
-        <div id="anime-container" class="anime-grid"></div>
+
+    <main class="page-layout">
+        <div class="content-area">
+            <div id="loading" class="loading-wrapper">
+                <div class="spinner"></div>
+                <div class="loading-text">Summoning Anime...</div>
+            </div>
+            <div id="anime-container" class="anime-grid"></div>
+        </div>
+        
+        <aside class="sidebar">
+            <h2 class="sidebar-title">Top Airing Anime</h2>
+            <ul id="leaderboard-list" class="leaderboard">
+                <div class="spinner" style="width: 30px; height: 30px; border-width: 4px;"></div>
+            </ul>
+        </aside>
     </main>
+
+    <!-- Anime Detail Modal -->
+    <div id="anime-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-modal">&times;</span>
+            <div id="modal-body">
+                <!-- Javascript will inject content here -->
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
